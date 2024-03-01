@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Machine1 (Sender) - IP: 192.168.56.101, User: dark
+# Machine2 (Receiver) - IP: 192.168.56.102, User: pinthis
+
+openssl genpkey -algorithm RSA -aes256 -out private_key.pem
+openssl rsa -pubout -in private_key.pem -out public_key.pem
+
+echo "This is sensitive data." > data.txt
+
+openssl rsautl -encrypt -pubin -inkey public_key.pem -in data.txt -out encrypted_data.bin
+
+scp public_key.pem pinthis@192.168.56.102:/home/pinthis
+
+(crontab -l ; echo "30 16 * * * /path/to/encrypt_and_transfer.sh") | crontab -
